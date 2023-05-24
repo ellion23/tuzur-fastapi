@@ -1,6 +1,6 @@
 from fastapi import APIRouter
-from schemas.users import User, UserUpdate, Credentials
-from services.users import user_service
+from models import User, UserUpdate, Credentials
+from services import UserService
 
 router = APIRouter()
 
@@ -14,7 +14,9 @@ def register_user(data: Credentials):
     response_model=list[User],
 )
 def get_users():
-    return user_service.get_users()
+    # return user_service.get_users()
+    return None
+    # TODO: work with database
 
 @router.put(
     "/users/{id}",
@@ -24,4 +26,6 @@ def update_user(
         id: int,
         data: UserUpdate
 ):
-    return user_service.update_user(id=id, payload=data)
+    # return user_service.update_user(id=id, payload=data)
+    return None
+    # TODO: work with database

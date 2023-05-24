@@ -1,21 +1,21 @@
-from schemas.users import User, UserUpdate, Credentials
+from models import User, UserUpdate, Credentials
 
 import uuid
-
-user_data: list[dict] = [
-    {
-        'id': 1,
-        "username": 'Allah',
-        'role': 'admin',
-        "password": '11111111'
-    },
-    {
-        'id': 2,
-        'username': 'Jesus',
-        'role': 'client',
-        'password': 'TheBestPasswordOfEver'
-    }
-]
+#
+# user_data: list[dict] = [
+#     {
+#         'id': 1,
+#         "username": 'Allah',
+#         'role': 'admin',
+#         "password": '11111111'
+#     },
+#     {
+#         'id': 2,
+#         'username': 'Jesus',
+#         'role': 'client',
+#         'password': 'TheBestPasswordOfEver'
+#     }
+# ]
 
 
 class UserService:
@@ -64,4 +64,4 @@ class UserService:
         return None
 
 
-user_service: UserService = UserService(user_data)
+# user_service: UserService = UserService(user_data)
