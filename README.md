@@ -1,6 +1,6 @@
 # about
 fastapi backend for tusur
-# Pakages
-fastapi
-uvicorn
+# pakages
+fastapi  
+uvicorn  
 sqlalchemy
