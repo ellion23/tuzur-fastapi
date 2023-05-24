@@ -1,0 +1,4 @@
+# pakages
+fastapi  
+uvicorn  
+sqlalchemy
