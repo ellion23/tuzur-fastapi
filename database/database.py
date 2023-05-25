@@ -1,8 +1,7 @@
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship, declarative_base, sessionmaker
 from sqlalchemy import create_engine
-from .example import get_hash
-from fastapi import APIRouter, Depends, HTTPException
+from models import User
 
 Base = declarative_base()
 
@@ -43,11 +42,17 @@ session = Session()
 
 
 def get_users_db():
-    user = User_db(email='Alice@heh.com', hashed_password=get_hash("abvgd"))
-    session.add(user)
-    session.commit()
     users = session.query(User_db).all()
-    print(users)
     return users
 
 
+def get_hash(text: str) -> str:
+    return sha256(text.encode()).hexdigest()
+
+
+def add_user(data):
+    users = session.query(User_db).all()
+    for user in users:
+        if user.email == data.email:
+            return "already"
+    pass

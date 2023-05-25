@@ -1,21 +1,6 @@
 from models import User, UserUpdate, Credentials
 
 import uuid
-#
-# user_data: list[dict] = [
-#     {
-#         'id': 1,
-#         "username": 'Allah',
-#         'role': 'admin',
-#         "password": '11111111'
-#     },
-#     {
-#         'id': 2,
-#         'username': 'Jesus',
-#         'role': 'client',
-#         'password': 'TheBestPasswordOfEver'
-#     }
-# ]
 
 
 class UserService:
@@ -54,7 +39,7 @@ class UserService:
         self.user_data.append({
             "id": uuid.uuid4(),
             "username": payload.username,
-            'TOWRITE': "TOWRITE" # TODOsss
+            'TOWRITE': "TOWRITE"  # TODOsss
         })
 
     def _auth(self, credentials: Credentials):
@@ -62,6 +47,5 @@ class UserService:
             if item['username'] == credentials.username and item['password'] == credentials.password:
                 return User(id=item["id"], username=item["username"])
         return None
-
 
 # user_service: UserService = UserService(user_data)

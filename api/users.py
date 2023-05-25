@@ -5,19 +5,28 @@ from database import get_users_db
 
 router = APIRouter()
 
-@router.post("/users", response_model=User,)
-def register_user(data: Credentials):
-    pass
+
+@router.post("/users/new",
+             # response_model=User,
+             )
+def register_user(creds: Credentials):
+    users = get_users_db()
+    for user in users:
+        print(user.email, creds.email)
+        if user.email == creds.email:
+            return "User already exists"
+
 
 @router.get(
     "/users",
     status_code=200,
-    response_model=list[User],
+    # response_model=list[User],
 )
 def get_users():
     # return user_service.get_users()
-    return None
+    return get_users_db()
     # TODO: work with database
+
 
 @router.put(
     "/users/{id}",
@@ -30,6 +39,7 @@ def update_user(
     # return user_service.update_user(id=id, payload=data)
     return None
     # TODO: work with database
+
 
 @router.get(
     "/test1/",

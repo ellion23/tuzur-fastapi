@@ -1,16 +1,16 @@
-import pydantic
+from pydantic import BaseModel
 
 
-class Credentials(pydantic.BaseModel):
-    username: str
+class Credentials(BaseModel):
+    email: str
     password: str
 
 
-class User(pydantic.BaseModel):
+class User(BaseModel):
     id: int
     username: str
 
 
-class UserUpdate(pydantic.BaseModel):
+class UserUpdate(BaseModel):
     auth: Credentials
     username: str
