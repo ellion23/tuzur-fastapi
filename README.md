@@ -1,5 +1,5 @@
 # packages
 fastapi  
 uvicorn  
-sqlalchemy
+sqlalchemy  
 pydantic[email]
