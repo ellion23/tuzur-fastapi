@@ -1,7 +1,7 @@
 from sqlalchemy.orm import sessionmaker, declarative_base
 from sqlalchemy import create_engine
 from .database import User_db, Item_db
-
+from .example import get_hash
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
@@ -17,18 +17,28 @@ Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
 session = Session()
 
+
+user = User_db(email='Alice@heh.com', hashed_password=get_hash("abvgd"))
+session.add(user)
+session.commit()
+
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
 def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+    # db = SessionLocal()
+    # try:
+    #     yield db
+    # finally:
+    #     db.close()
+    pass
 
 
-def get_users_db(db: Session = Depends(get_db)):
-
-    users = db.query(User_db).all()
+# db: Session = Depends(get_db)
+def get_users_db():
+    user = User_db(email='Alice@heh.com', hashed_password=get_hash("abvgd"))
+    session.add(user)
+    session.commit()
+    users = session.query(User_db).all()
+    print(users)
     return users
