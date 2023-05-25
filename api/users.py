@@ -1,44 +1,53 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from models import User, UserUpdate, Credentials
-from services import UserService
+from services import UserService, user_service
 from database import get_users_db
 
 router = APIRouter()
 
 
-@router.post("/users/new",
-             # response_model=User,
+@router.post("/users/register",
+             response_model=User,
              )
-def register_user(creds: Credentials):
-    users = get_users_db()
+async def register_user(creds: Credentials):
+    users = user_service.get_users()
     for user in users:
-        print(user.email, creds.email)
         if user.email == creds.email:
-            return "User already exists"
+            raise HTTPException(status_code=400, detail="Email already registered")
+    newUser = user_service.register(creds)
+    return newUser
 
 
 @router.get(
     "/users",
     status_code=200,
-    # response_model=list[User],
+    response_model=list[User],
 )
-def get_users():
-    # return user_service.get_users()
-    return get_users_db()
-    # TODO: work with database
+async def get_users():
+    return user_service.get_users()
+
+@router.get(
+    "/users/login/",
+    status_code=200,
+    response_model=User
+)
+async def login(email: str, password: str):
+    user = user_service.auth(Credentials(email=email, password=password))
+    if user:
+        return user
+    else:
+        raise HTTPException(status_code=400, detail="Incorrect email/password")
 
 
 @router.put(
     "/users/{id}",
     response_model=User,
 )
-def update_user(
+async def update_user(
         id: int,
         data: UserUpdate
 ):
-    # return user_service.update_user(id=id, payload=data)
-    return None
-    # TODO: work with database
+    return user_service.update_user(id=id, payload=data)
 
 
 @router.get(

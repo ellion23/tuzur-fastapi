@@ -1,14 +1,16 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 
 
 class Credentials(BaseModel):
-    email: str
+    email: EmailStr
     password: str
 
 
 class User(BaseModel):
     id: int
-    username: str
+    username: str | None = None
+    email: EmailStr
+    hashed_password: str
 
 
 class UserUpdate(BaseModel):

@@ -1,12 +1,12 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, create_engine
 from sqlalchemy.orm import relationship, declarative_base, sessionmaker
-from sqlalchemy import create_engine
-from models import User
+from hashlib import sha256
+from models import User, Credentials
 
 Base = declarative_base()
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///./database.db"
-engine = create_engine(SQLALCHEMY_DATABASE_URL, echo=False)
+engine = create_engine(SQLALCHEMY_DATABASE_URL, echo=True)
 
 
 class User_db(Base):
@@ -15,6 +15,7 @@ class User_db(Base):
     id = Column(Integer, primary_key=True)
     email = Column(String, unique=True)
     hashed_password = Column(String)
+    username = Column(String)
     # is_active = Column(Boolean, default=True)
     items = relationship("Item_db", back_populates="owner")
 
@@ -50,9 +51,17 @@ def get_hash(text: str) -> str:
     return sha256(text.encode()).hexdigest()
 
 
-def add_user(data):
-    users = session.query(User_db).all()
-    for user in users:
-        if user.email == data.email:
-            return "already"
-    pass
+def add_user(creds: Credentials):
+    newUser = User_db(email=creds.email, hashed_password=get_hash(creds.password))
+    session.add(newUser)
+    session.commit()
+    return User(id=newUser.id, email=newUser.email, hashed_password=newUser.hashed_password, username=newUser.username)
+
+
+def update_user_db(user_data: User):
+    user = session.query(User_db).filter_by(id=user_data.id).first()
+    user.username = user_data.username
+    user.email = user_data.email
+    user.hashed_password = user_data.hashed_password
+    session.commit()
+    return User(id=user.id, username=user.username, email=user.email, hashed_password=user.hashed_password)
