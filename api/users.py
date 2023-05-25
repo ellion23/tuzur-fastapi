@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 from models import User, UserUpdate, Credentials
 from services import UserService
+from database import get_users_db
 
 router = APIRouter()
 
@@ -29,3 +30,10 @@ def update_user(
     # return user_service.update_user(id=id, payload=data)
     return None
     # TODO: work with database
+
+@router.get(
+    "/test1/",
+    status_code=200,
+)
+async def test1():
+    return get_users_db()
