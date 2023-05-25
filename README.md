@@ -1,4 +1,4 @@
-# pakages
+# packages
 fastapi  
 uvicorn  
 sqlalchemy
