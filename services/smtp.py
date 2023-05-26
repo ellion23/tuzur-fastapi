@@ -12,6 +12,7 @@ class EmailService:
     def send_restore_code(self, dest_email: str, code: str) -> None:
         subject = 'Restore password'
         body = 'Use that code: ' + code + " to restore your password."
+
         msg = MIMEMultipart()
         msg['From'] = self.email
         msg['To'] = dest_email
