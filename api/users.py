@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from models import User, UserUpdate, Credentials
+from models import User, UserUpdate, Credentials, RestoreCode, RestoreData
 from services import UserService, user_service
 from database import database
 from random import randint
@@ -50,3 +50,22 @@ async def update_user(
         data: UserUpdate
 ):
     return user_service.update_user(id=id, payload=data)
+
+
+@router.get(
+    "/users/get_restore_code",
+    response_model=RestoreCode,
+)
+def send_code(data: RestoreData):
+    users = user_service.get_users()
+    for user in users:
+        if user.email == data.email:
+            return RestoreCode(code=f"{randint(1, 9999):04d}")
+    raise HTTPException(status_code=400, detail="No user with this Email address")
+
+@router.put(
+    "/users/restore",
+    response_model=Credentials
+)
+def restore_user():
+    pass
