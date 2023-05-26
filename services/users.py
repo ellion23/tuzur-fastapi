@@ -1,5 +1,5 @@
-from models import User, UserUpdate, Credentials, RestoreData, RestoreCode
-from database import database
+from models import User, UserUpdate, Credentials
+from database import database, get_hash
 
 
 class UserService:
@@ -43,13 +43,9 @@ class UserService:
 
     def auth(self, credentials: Credentials) -> User | None:
         for item in self.user_data:
-            if item.email == credentials.email and item.hashed_password == database.get_hash(credentials.password):
+            if item.email == credentials.email and item.hashed_password == get_hash(credentials.password):
                 return item
         return None
-
-    def restore_user(self, data: RestoreData, code: RestoreCode) -> Credentials:
-        pass
-    # TODO: обращение к бд
 
 
 user_service: UserService = UserService()

@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException
 from models import User, UserUpdate, Credentials
 from services import UserService, user_service
 from database import database
+from random import randint
 
 router = APIRouter()
 
@@ -49,5 +50,3 @@ async def update_user(
         data: UserUpdate
 ):
     return user_service.update_user(id=id, payload=data)
-
-
