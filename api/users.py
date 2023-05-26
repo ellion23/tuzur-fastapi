@@ -1,7 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from models import User, UserUpdate, Credentials, RestoreCode, RestoreData
-from services import UserService, user_service, email_service
-from database import database
+from services import user_service, email_service
 from random import randint
 
 router = APIRouter()

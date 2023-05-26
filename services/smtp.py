@@ -8,7 +8,7 @@ class EmailService:
     def __init__(self) -> None:
         self.server = smtplib.SMTP_SSL('smtp.mail.ru:465')
         self.email = 'service.ellion23@internet.ru'
-#asd
+
     def send_restore_code(self, dest_email: str, code: str) -> None:
         subject = 'Restore password'
         body = 'Use that code: ' + code + " to restore your password."
