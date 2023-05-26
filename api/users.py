@@ -16,6 +16,7 @@ async def register_user(creds: Credentials):
             raise HTTPException(status_code=400, detail="Email already registered")
     newUser = user_service.register(creds)
     return newUser
+# TODO: насрать в подъезде в маске человека паука
 
 
 @router.get(
@@ -25,6 +26,7 @@ async def register_user(creds: Credentials):
 )
 async def get_users():
     return user_service.get_users()
+
 
 @router.get(
     "/users/login/",
@@ -48,11 +50,3 @@ async def update_user(
         data: UserUpdate
 ):
     return user_service.update_user(id=id, payload=data)
-
-
-@router.get(
-    "/test1/",
-    status_code=200,
-)
-async def test1():
-    return get_users_db()
