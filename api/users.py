@@ -16,7 +16,6 @@ async def register_user(creds: Credentials):
             raise HTTPException(status_code=400, detail="Email already registered")
     newUser = user_service.register(creds)
     return newUser
-# TODO: насрать в подъезде в маске человека паука
 
 
 @router.get(
