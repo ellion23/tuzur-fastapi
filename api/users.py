@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from models import User, UserUpdate, Credentials, RestoreCode, RestoreData
-from services import UserService, user_service
+from services import UserService, user_service, email_service
 from database import database
 from random import randint
 
@@ -63,9 +63,21 @@ def send_code(data: RestoreData):
             return RestoreCode(code=f"{randint(1, 9999):04d}")
     raise HTTPException(status_code=400, detail="No user with this Email address")
 
+
 @router.put(
     "/users/restore",
     response_model=Credentials
 )
 def restore_user():
-    pass
+    pass  # TODO: Restoration
+
+
+@router.get(
+    "/users/test"
+)
+def test1():
+    try:
+        email_service.send_restore_code(dest_email="rubcinskija@gmail.com", code=f"{randint(1, 9999):04d}")
+        return {"message": "access"}
+    except:
+        raise HTTPException(status_code=400, detail="Error")
