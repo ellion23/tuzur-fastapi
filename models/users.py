@@ -16,3 +16,12 @@ class User(BaseModel):
 class UserUpdate(BaseModel):
     auth: Credentials
     username: str
+
+
+class RestoreData(BaseModel):
+    id: int
+    email: EmailStr
+
+
+class RestoreCode(BaseModel):
+    code: int

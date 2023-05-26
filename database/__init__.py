@@ -1,3 +1,3 @@
-from .database import *
+from .database import database
 
-__all__ = ["get_users_db", "update_user_db"]
+__all__ = ["database"]
