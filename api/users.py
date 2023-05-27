@@ -1,5 +1,6 @@
 from fastapi import APIRouter, HTTPException
-from models import User, UserUpdate, Credentials, RestoreCode, RestoreData
+from database import database
+from models import User, UserUpdate, Credentials, RestoreData
 from services import user_service, email_service
 from random import randint
 
@@ -41,7 +42,7 @@ async def login(email: str, password: str):
 
 
 @router.put(
-    "/users/{id}",
+    "/users/{id}/update",
     response_model=User,
 )
 async def update_user(
@@ -53,30 +54,27 @@ async def update_user(
 
 @router.get(
     "/users/get_restore_code",
-    response_model=RestoreCode,
+    response_model=str,
 )
-def send_code(data: RestoreData):
+def get_restore_code(email: str):
     users = user_service.get_users()
     for user in users:
-        if user.email == data.email:
-            return RestoreCode(code=f"{randint(1, 9999):04d}")
+        if user.email == email:
+            code_str = f"{randint(1, 9999):4d}"
+            code_db = RestoreData(email=email, code=code_str)
+            database.write_code(code_db)
+            email_service.send_restore_code(code_db.email, code_str)
+            return email
     raise HTTPException(status_code=400, detail="No user with this Email address")
 
 
 @router.put(
     "/users/restore",
-    response_model=Credentials
+    response_model=User
 )
-def restore_user():
-    pass  # TODO: Restoration
+def restore_user(data: RestoreData, password: str):
+    if database.redeem_code(data):
+        return database.restore_user_db(data, password)
+    else:
+        raise HTTPException(status_code=400, detail="Incorrect code")
 
-
-@router.get(
-    "/users/test"
-)
-def test1():
-    try:
-        email_service.send_restore_code(dest_email="rubcinskija@gmail.com", code=f"{randint(1, 9999):04d}")
-        return {"message": "access"}
-    except:
-        raise HTTPException(status_code=400, detail="Error")

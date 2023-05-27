@@ -20,7 +20,4 @@ class UserUpdate(BaseModel):
 
 class RestoreData(BaseModel):
     email: EmailStr
-
-
-class RestoreCode(BaseModel):
-    code: str
+    code: str | None = None

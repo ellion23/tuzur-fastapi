@@ -1,7 +1,7 @@
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from config import smtp_password
+from password import smtp_password
 
 
 class EmailService:

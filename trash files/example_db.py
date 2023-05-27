@@ -35,7 +35,7 @@ print(users)
 
 # Изменение записи в таблице
 user = session.query(User).filter_by(name='Alice').first()
-user.hashed_password = get_hash('ellionld')
+user.hashed_password = get_hash('ellioasdnld')
 session.commit()
 
 # Удаление записи из таблицы
