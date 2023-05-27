@@ -41,13 +41,13 @@ class CodeDB(Base):
     email = Column(String)
     code = Column(String)
     is_active = Column(Boolean)
+
     def __repr__(self):
         return f"<Code(id='{self.id}', email={self.email}, code={self.code}, is_active={self.is_active})>"
 
 
 def get_hash(text: str) -> str:
     return sha256(text.encode()).hexdigest()
-
 
 
 def get_usr(user: [UserDB]) -> User:
@@ -68,9 +68,8 @@ class Database:
     def add_user(self, creds: Credentials) -> User:
         newUser = UserDB(email=creds.email, hashed_password=get_hash(creds.password))
         self.session.add(newUser)
-       self.session.commit()
-        return User(id=newUser.id, email=newUser.email, hashed_password=newUser.hashed_password,
-                    username=newUser.username)
+        self.session.commit()
+        return get_usr(newUser)
 
     def update_user_db(self, user_data: User) -> User:
         user = self.session.query(UserDB).filter_by(id=user_data.id).first()
@@ -81,7 +80,7 @@ class Database:
         return get_usr(user)
 
     def restore_user_db(self, data: RestoreData, password: str) -> User | bool:
-        user = self.session.query(UserDB).filter_by(id=id).first()
+        user = self.session.query(UserDB).filter_by(email=data.email).first()
         code_db = self.session.query(CodeDB).filter_by(email=data.email).first()
         if code_db.is_active:
             print('wow')
