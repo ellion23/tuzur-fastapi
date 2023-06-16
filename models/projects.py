@@ -5,10 +5,12 @@ from pydantic import BaseModel
 class ProjectCreate(BaseModel):
     owner_id: int
     title: str
+    description: str | None = None
 
 
 class Project(BaseModel):
-    proj_id: int
+    id: int
     owner_id: int
     title: str
+    description: str
     tasks: List[int] | None = None

@@ -1,7 +1,7 @@
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, create_engine
 from sqlalchemy.orm import relationship, declarative_base, sessionmaker
 from hashlib import sha256
-from models import User, Credentials, RestoreData
+from models import User, Credentials, RestoreData, Project, ProjectCreate, TaskCreate, Task, SubTask, SubTaskCreate
 
 SQL_URL = "sqlite:///./database.db"
 Base = declarative_base()
@@ -15,24 +15,56 @@ class UserDB(Base):
     hashed_password = Column(String)
     username = Column(String)
     # is_active = Column(Boolean, default=True)
-    items = relationship("ItemDB", back_populates="owner")
+    # items = relationship("ItemDB", back_populates="owner")
 
     def __repr__(self):
         return f"<User(id='{self.id}', email={self.email}, hashed_password={self.hashed_password}, username={self.username})>"
 
 
-class ItemDB(Base):
-    __tablename__ = "items"
+class ProjectDB(Base):
+    __tablename__ = "projects"
 
     id = Column(Integer, primary_key=True)
+    owner_id = Column(Integer)
     title = Column(String)
     description = Column(String)
-    owner_id = Column(Integer, ForeignKey("users.id"))
-
-    owner = relationship("UserDB", back_populates="items")
+    # owner = relationship("UserDB", back_populates="projects")
+    tasks = Column(String)
 
     def __repr__(self):
-        return f"<Item(id='{self.id}', title={self.title}, description={self.description})>"
+        return f"<Project(id='{self.id}', title={self.title}, description={self.description})>"
+
+
+class TaskDB(Base):
+    __tablename__ = "tasks"
+
+    id = Column(Integer, primary_key=True)
+    owner_id = Column(Integer)
+    title = Column(String)
+    description = Column(String)
+    importance = Column(Integer)
+    executor = Column(String)
+    # owner = relationship("UserDB", back_populates="tasks")
+    subtasks = Column(String)
+
+    def __repr__(self):
+        return f"<Task(id='{self.id}', title={self.title}, description={self.description})>"
+
+
+class SubtaskDB(Base):
+    __tablename__ = "subtasks"
+
+    id = Column(Integer, primary_key=True)
+    owner_id = Column(Integer)
+    task_id = Column(Integer)
+    title = Column(String)
+    description = Column(String)
+    importance = Column(Integer)
+    executor = Column(String)
+    # owner = relationship("UserDB", back_populates="subtasks")
+
+    def __repr__(self):
+        return f"<Task(id='{self.id}', title={self.title}, description={self.description})>"
 
 
 class CodeDB(Base):
@@ -52,6 +84,10 @@ def get_hash(text: str) -> str:
 
 def get_usr(user: [UserDB]) -> User:
     return User(id=user.id, email=user.email, username=user.username, hashed_password=user.hashed_password)
+
+
+def get_proj(proj: [ProjectDB]) -> Project:
+    return Project(id=proj.id, owner_id=proj.owner_id, title=proj.title, description=proj.description, tasks=proj.tasks)
 
 
 class Database:
@@ -103,6 +139,17 @@ class Database:
             return True
         else:
             return False
+
+    def add_project(self, data: ProjectCreate):
+        newProject = ProjectDB(owner_id=data.owner_id, title=data.title, description=data.description)
+        self.session.add(newProject)
+        self.session.commit()
+        return get_proj(newProject)
+
+    def get_projects_db(self):
+        projects = self.session.query(ProjectDB).all()
+        return projects
+
 
 
 database = Database(SQL_URL)
