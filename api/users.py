@@ -56,7 +56,7 @@ async def update_user(
     "/users/get_restore_code",
     response_model=str,
 )
-def get_restore_code(email: str):
+async def get_restore_code(email: str):
     users = user_service.get_users()
     for user in users:
         if user.email == email:
@@ -72,7 +72,7 @@ def get_restore_code(email: str):
     "/users/restore",
     response_model=User
 )
-def restore_user(data: RestoreData, password: str):
+async def restore_user(data: RestoreData, password: str):
     if database.redeem_code(data):
         return database.restore_user_db(data, password)
     else:
