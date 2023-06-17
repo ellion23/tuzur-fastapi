@@ -12,9 +12,9 @@ class SubTaskCreate(BaseModel):
 
 class SubTask(BaseModel):
     id: int
-    task_id: int
     owner_id: int
     title: str
     importance: int
     executor: str
     description: str | None = None
+    task_id: int

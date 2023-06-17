@@ -7,6 +7,7 @@ class TaskCreate(BaseModel):
     importance: int
     executor: str
     description: str | None = None
+    subtasks: str | None = None
 
 
 class Task(BaseModel):
@@ -16,3 +17,4 @@ class Task(BaseModel):
     importance: int
     executor: str
     description: str | None = None
+    subtasks: str | None = None

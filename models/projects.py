@@ -13,4 +13,4 @@ class Project(BaseModel):
     owner_id: int
     title: str
     description: str
-    tasks: List[int] | None = None
+    tasks: str | None = None

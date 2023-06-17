@@ -77,4 +77,3 @@ async def restore_user(data: RestoreData, password: str):
         return database.restore_user_db(data, password)
     else:
         raise HTTPException(status_code=400, detail="Incorrect code")
-

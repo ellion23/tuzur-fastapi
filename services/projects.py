@@ -4,20 +4,31 @@ from database import database
 
 class ProjectService:
     def __init__(self) -> None:
-        self.user_data: list[Project] = []
+        self.project_data: list[Project] = []
         self.load_projects()
 
     def load_projects(self) -> None:
-        user_data = database.get_users_db()
+        project_data = database.get_projects_db()
         items = []
 
-        for item in user_data:
+        for item in project_data:
+            tasks = None
+            if item.tasks:
+                tasks = item.tasks.split(",")
             items.append(
-                User(
+                Project(
                     id=item.id,
-                    username=item.username,
-                    email=item.email,
-                    hashed_password=item.hashed_password
+                    owner_id=item.owner_id,
+                    title=item.title,
+                    description=item.description,
+                    tasks=tasks
                 )
             )
-        self.user_data = items
+        self.project_data = items
+
+    def get_projects(self) -> list[Project]:
+        self.load_projects()
+        return self.project_data
+
+
+project_service: ProjectService = ProjectService()

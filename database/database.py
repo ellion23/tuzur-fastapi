@@ -1,10 +1,11 @@
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, create_engine
 from sqlalchemy.orm import relationship, declarative_base, sessionmaker
-from hashlib import sha256
+import hashlib
 from models import User, Credentials, RestoreData, Project, ProjectCreate, TaskCreate, Task, SubTask, SubTaskCreate
 
 SQL_URL = "sqlite:///./database.db"
 Base = declarative_base()
+key = hashlib.sha256(b'secret key ultra').digest()
 
 
 class UserDB(Base):
@@ -14,6 +15,7 @@ class UserDB(Base):
     email = Column(String, unique=True)
     hashed_password = Column(String)
     username = Column(String)
+
     # is_active = Column(Boolean, default=True)
     # items = relationship("ItemDB", back_populates="owner")
 
@@ -61,6 +63,7 @@ class SubtaskDB(Base):
     description = Column(String)
     importance = Column(Integer)
     executor = Column(String)
+
     # owner = relationship("UserDB", back_populates="subtasks")
 
     def __repr__(self):
@@ -79,7 +82,9 @@ class CodeDB(Base):
 
 
 def get_hash(text: str) -> str:
-    return sha256(text.encode()).hexdigest()
+    salt = hashlib.sha256(b'salt').hexdigest()
+    hash = hashlib.pbkdf2_hmac('sha256', text.encode('utf-8'), salt.encode('utf-8'), 100000, dklen=128)
+    return str(hash)
 
 
 def get_usr(user: [UserDB]) -> User:
@@ -88,6 +93,16 @@ def get_usr(user: [UserDB]) -> User:
 
 def get_proj(proj: [ProjectDB]) -> Project:
     return Project(id=proj.id, owner_id=proj.owner_id, title=proj.title, description=proj.description, tasks=proj.tasks)
+
+
+def get_task(task: [TaskDB]) -> Task:
+    return Task(id=task.id, owner_id=task.owner_id, title=task.title, importance=task.importance,
+                executor=task.executor, description=task.description, subtasks=task.subtasks)
+
+
+def get_subtask(task: [SubtaskDB]) -> SubTask:
+    return SubTask(id=task.id, owner_id=task.owner_id, title=task.title, importance=task.importance,
+                   executor=task.executor, description=task.description, task_id=task.task_id)
 
 
 class Database:
@@ -150,6 +165,58 @@ class Database:
         projects = self.session.query(ProjectDB).all()
         return projects
 
+    def get_tasks_db(self):
+        tasks = self.session.query(TaskDB).all()
+        return tasks
+
+    def get_subtasks_db(self):
+        subtasks = self.session.query(SubtaskDB).all()
+        return subtasks
+
+    def add_task_db(self, data: TaskCreate):
+        newTask = TaskDB(owner_id=data.owner_id, title=data.title, description=data.description,
+                         importance=data.importance, executor=data.executor, subtasks=data.subtasks)
+        self.session.add(newTask)
+        self.session.commit()
+        return get_task(newTask)
+
+    def add_subtask_db(self, data: TaskCreate):
+        newTask = SubtaskDB(owner_id=data.owner_id, title=data.title, description=data.description,
+                            importance=data.importance, executor=data.executor, task_id=data.task_id)
+        self.session.add(newTask)
+        self.session.commit()
+        return get_subtask(newTask)
+
+    def update_task(self, data: Task):
+        task = self.session.query(TaskDB).filter_by(id=data.id).first()
+        task.owner_id = data.owner_id
+        task.title = data.title
+        task.description = data.description
+        task.importance = data.importance
+        task.executor = data.executor
+        task.subtasks = data.subtasks
+        self.session.commit()
+        return get_task(task)
+
+    def update_subtask(self, data: SubTask):
+        subtask = self.session.query(SubtaskDB).filter_by(id=data.id).first()
+        subtask.owner_id = data.owner_id
+        subtask.title = data.title
+        subtask.description = data.description
+        subtask.importance = data.importance
+        subtask.executor = data.executor
+        subtask.task_id = data.task_id
+        self.session.commit()
+        return get_subtask(subtask)
+
+    def update_project(self, data: Project):
+        project = self.session.query(ProjectDB).filter_by(id=data.id).first()
+        project.title = data.title
+        project.owner_id = data.owner_id
+        project.description = data.description
+        project.tasks = data.tasks
+        self.session.commit()
+        return get_proj(project)
 
 
 database = Database(SQL_URL)

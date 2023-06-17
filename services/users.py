@@ -42,6 +42,7 @@ class UserService:
         return database.add_user(payload)
 
     def auth(self, credentials: Credentials) -> User | None:
+        self.load_users()
         for item in self.user_data:
             if item.email == credentials.email and item.hashed_password == get_hash(credentials.password):
                 return item
